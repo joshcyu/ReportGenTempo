@@ -13,11 +13,9 @@ const DailyTerminalReport = () => {
   const [endDate, setEndDate] = useState('');
 
   const api = axios.create({
-    baseURL: 'https://4fe7-120-28-70-52.ngrok-free.app/api',
+    baseURL: "https://4fe7-120-28-70-52.ngrok-free.app/api",
     headers: {
-      // this tells ngrok to skip its interstitial
       'ngrok-skip-browser-warning': 'true',
-      // optionally also send a custom UA
       'User-Agent': 'MyNetlifyApp/1.0'
     }
   });
@@ -41,23 +39,26 @@ const DailyTerminalReport = () => {
     if (startDate) params.startDate = startDate;
     if (endDate)   params.endDate   = endDate;
 
-    const endpoint = '/daily-terminal-report';
+    // you said: keep this legacy-vs-current toggle exactly as is
+    const endpointPath =
+      endDate && dayjs(endDate).isBefore(cutoffDate.add(1,'day'))
+        ? "/daily-terminal-report"   // legacy
+        : "/daily-terminal-report";  // current
 
-    const res = await axios.get(endpoint, { params });
+    const res = await api.get(endpointPath, { params });
     setReport(res.data);
-    setExpandedDate(null);
     setDetailsByDate({});
-    setExpandedTxn(null);
     setTxnDetails({});
+    setExpandedDate(null);
+    setExpandedTxn(null);
   };
 
   // Fetch transactions for a day
   const fetchDetailsForDate = async (rawDate) => {
     if (expandedDate === rawDate) {
-      setExpandedDate(null);
-      return;
+      return setExpandedDate(null);
     }
-    const res = await api.get('/daily-terminal-report/details', {
+    const res = await api.get("/daily-terminal-report/details", {
       params: { date: rawDate }
     });
     setDetailsByDate(d => ({ ...d, [rawDate]: res.data }));
@@ -68,8 +69,7 @@ const DailyTerminalReport = () => {
   // Fetch items for a transaction
   const fetchTxnDetails = async (transID) => {
     if (expandedTxn === transID) {
-      setExpandedTxn(null);
-      return;
+      return setExpandedTxn(null);
     }
     if (!txnDetails[transID]) {
       const res = await api.get(`/transactions/${transID}/details`);
