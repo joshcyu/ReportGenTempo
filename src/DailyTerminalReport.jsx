@@ -12,6 +12,16 @@ const DailyTerminalReport = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
+  const api = axios.create({
+    baseURL: 'https://4fe7-120-28-70-52.ngrok-free.app/api',
+    headers: {
+      // this tells ngrok to skip its interstitial
+      'ngrok-skip-browser-warning': 'true',
+      // optionally also send a custom UA
+      'User-Agent': 'MyNetlifyApp/1.0'
+    }
+  });
+
   const terminals = [
     'Kai Inan','Ramen Ki','Ihaw Ihaw','Stacks','QuickSilog',
     'Cozy Taco','Kanpai','Stomping','D&D','MamaBear',
@@ -31,10 +41,7 @@ const DailyTerminalReport = () => {
     if (startDate) params.startDate = startDate;
     if (endDate)   params.endDate   = endDate;
 
-    const endpoint =
-      endDate && dayjs(endDate).isBefore(cutoffDate.add(1,'day'))
-        ? "https://4fe7-120-28-70-52.ngrok-free.app/api/daily-terminal-report"
-        : "https://4fe7-120-28-70-52.ngrok-free.app/api/daily-terminal-report";
+    const endpoint = '/daily-terminal-report';
 
     const res = await axios.get(endpoint, { params });
     setReport(res.data);
@@ -50,10 +57,9 @@ const DailyTerminalReport = () => {
       setExpandedDate(null);
       return;
     }
-    const res = await axios.get(
-      "https://4fe7-120-28-70-52.ngrok-free.app/api/daily-terminal-report/details",
-      { params: { date: rawDate } }
-    );
+    const res = await api.get('/daily-terminal-report/details', {
+      params: { date: rawDate }
+    });
     setDetailsByDate(d => ({ ...d, [rawDate]: res.data }));
     setExpandedDate(rawDate);
     setExpandedTxn(null);
@@ -66,9 +72,7 @@ const DailyTerminalReport = () => {
       return;
     }
     if (!txnDetails[transID]) {
-      const res = await axios.get(
-        `https://4fe7-120-28-70-52.ngrok-free.app/api/transactions/${transID}/details`
-      );
+      const res = await api.get(`/transactions/${transID}/details`);
       setTxnDetails(d => ({ ...d, [transID]: res.data }));
     }
     setExpandedTxn(transID);
