@@ -33,8 +33,8 @@ const DailyTerminalReport = () => {
 
     const endpoint =
       endDate && dayjs(endDate).isBefore(cutoffDate.add(1,'day'))
-        ? "https://69dc-120-28-70-52.ngrok-free.app/api/daily-terminal-report"
-        : "https://69dc-120-28-70-52.ngrok-free.app/api/daily-terminal-report";
+        ? "https://4fe7-120-28-70-52.ngrok-free.app/api/daily-terminal-report"
+        : "https://4fe7-120-28-70-52.ngrok-free.app/api/daily-terminal-report";
 
     const res = await axios.get(endpoint, { params });
     setReport(res.data);
@@ -51,7 +51,7 @@ const DailyTerminalReport = () => {
       return;
     }
     const res = await axios.get(
-      "https://69dc-120-28-70-52.ngrok-free.app/api/daily-terminal-report/details",
+      "https://4fe7-120-28-70-52.ngrok-free.app/api/daily-terminal-report/details",
       { params: { date: rawDate } }
     );
     setDetailsByDate(d => ({ ...d, [rawDate]: res.data }));
@@ -67,7 +67,7 @@ const DailyTerminalReport = () => {
     }
     if (!txnDetails[transID]) {
       const res = await axios.get(
-        `https://69dc-120-28-70-52.ngrok-free.app/api/transactions/${transID}/details`
+        `https://4fe7-120-28-70-52.ngrok-free.app/api/transactions/${transID}/details`
       );
       setTxnDetails(d => ({ ...d, [transID]: res.data }));
     }
